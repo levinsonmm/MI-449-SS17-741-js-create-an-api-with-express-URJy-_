@@ -1,7 +1,7 @@
 var express = require('express')
 var app = express()
 var port = process.env.PORT || 8080
-var products = require('./products.js')
+var todos = require('./todos.js')
 var bodyParser = require('body-parser')
 app.use(bodyParser.json())
 
@@ -11,49 +11,49 @@ app.get('/', function (request, response) {
   })
 })
 
-app.get('/products', function (request, response) {
-  response.json(products)
+app.get('/todos', function (request, response) {
+  response.json(todos)
 })
 
-app.get('/products/:slug', function (request, response) {
-  if (!products[request.params.slug]) {
-    response.status(404).end('sorry, no such product: ' + request.params.slug)
+app.get('/todos/:slug', function (request, response) {
+  if (!todos[request.params.slug]) {
+    response.status(404).end('sorry, no such todo: ' + request.params.slug)
     return
   }
-  response.json(products[request.params.slug])
+  response.json(todos[request.params.slug])
 })
 
-app.post('/products', function (request, response) {
-  var slug = request.body.name.trim().toLowerCase().split(' ').join('-')
-  products[slug] = {
-    name: request.body.name.trim(),
-    price: '$' + parseFloat(request.body.price).toFixed(2)
+app.post('/todos', function (request, response) {
+  var slug = request.body.text.trim().toLowerCase().split(' ').join('-')
+  todos[slug] = {
+    text: request.body.text.trim(),
+    completed: request.body.completed.trim()
   }
-  response.redirect('/products/' + slug)
+  response.redirect('/todos/' + slug)
 })
 
-app.delete('/products/:slug', function (request, response) {
-  if (!products[request.params.slug]) {
-    response.status(404).end('sorry, no such product: ' + request.params.slug)
+app.delete('/todos/:slug', function (request, response) {
+  if (!todos[request.params.slug]) {
+    response.status(404).end('sorry, no such todo: ' + request.params.slug)
     return
   }
-  delete products[request.params.slug]
-  response.redirect('/products')
+  delete todos[request.params.slug]
+  response.redirect('/todos')
 })
 
-app.put('/products/:slug', function (request, response) {
-  var product = products[request.params.slug]
-  if (!products[request.params.slug]) {
-    response.status(404).end('sorry, no such product: ' + request.params.slug)
+app.put('/todos/:slug', function (request, response) {
+  var product = todos[request.params.slug]
+  if (!todos[request.params.slug]) {
+    response.status(404).end('sorry, no such todo: ' + request.params.slug)
     return
   }
-  if (request.body.name !== undefined) {
-    product.name = request.body.name.trim()
+  if (request.body.text !== undefined) {
+    product.text = request.body.text.trim()
   }
-  if (request.body.price !== undefined) {
-    product.price = '$' + parseFloat(request.body.price).toFixed(2)
+  if (request.body.completed !== undefined) {
+    product.completed = request.body.completed.trim()
   }
-  response.redirect('/products')
+  response.redirect('/todos')
 })
 
 app.use(function (request, response, next) {
